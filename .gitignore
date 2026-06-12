@@ -1,0 +1,45 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment / secrets
+.env
+.env.*
+*.key
+config.local.py
+
+# Pipeline data artifacts — Bronze and Silver are data, not code
+bronze/
+silver/
+gold/
+
+# Debug scripts
+debug_*.py
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Large files
+*.zip
+*.gz
+*.tar
