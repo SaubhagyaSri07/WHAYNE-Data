@@ -1,6 +1,6 @@
 import logging
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from adapters.research.clinicaltrials import ClinicalTrialsAdapter
 from adapters.research.pubmed import PubMedAdapter
@@ -11,6 +11,7 @@ from adapters.research.cochrane import CochraneAdapter
 from adapters.regulatory.eudamed import EUDAMEDAdapter
 from adapters.patents.uspto import USPTOAdapter
 from adapters.trade.comtrade import ComtradeAdapter
+from adapters.patents.google_patents import GooglePatentsAdapter
 
 from normaliser.engine import NormaliserEngine
 from storage import print_sample, write_bronze, write_silver
@@ -37,7 +38,7 @@ def run(source_id: str, since: datetime = None) -> dict:
     """
     print(f"\n{'=' * 60}")
     print(f"  Source   : {source_id.upper()}")
-    print(f"  Run at   : {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
+    print(f"  Run at   : {datetime.now(timezone.utc).replace(tzinfo=None).strftime('%Y-%m-%d %H:%M:%S')} UTC")
     print(f"{'=' * 60}")
 
     # ── Step 1: Get adapter ───────────────────────────────────────────────
@@ -127,6 +128,7 @@ def _get_adapter(source_id: str):
         "comtrade": ComtradeAdapter(),
         "rss": RSSAdapter(),
         "cochrane": CochraneAdapter(),
+        "google_patents": GooglePatentsAdapter(),
     }
     return adapters.get(source_id)
 
@@ -136,5 +138,5 @@ if __name__ == "__main__":
     #   python pipeline.py pubmed
     #   python pipeline.py clinicaltrials
     source = sys.argv[1] if len(sys.argv) > 1 else "pubmed"
-    since  = datetime.utcnow() - timedelta(days=30)
+    since  = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=30)
     run(source_id=source, since=since)

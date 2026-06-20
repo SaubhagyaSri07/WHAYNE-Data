@@ -11,6 +11,7 @@ from normaliser.maps.cochrane import CochraneMap
 from normaliser.maps.eudamed import EUDAMEDMap
 from normaliser.maps.uspto import USPTOMap
 from normaliser.maps.comtrade import ComtradeMap
+from normaliser.maps.google_patents import GooglePatentsMap
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,7 @@ class NormaliserEngine:
             "comtrade": ComtradeMap(),
             "rss": RSSMap(),
             "cochrane": CochraneMap(),
+            "google_patents": GooglePatentsMap(),
         }
 
     def normalise(self, source_id: str, raw: str) -> List[CanonicalRecord]:

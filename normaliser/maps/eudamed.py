@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from schema import Actor, ActorRole, CanonicalRecord, EntityType, Lineage
@@ -169,7 +169,7 @@ class EUDAMEDMap:
             classifiers  = classifiers,
             lineage = Lineage(
                 adapter_version = self.version,
-                pipeline_run_id = datetime.utcnow().isoformat(),
+                pipeline_run_id = datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
                 llm_assisted    = False,
             ),
         )

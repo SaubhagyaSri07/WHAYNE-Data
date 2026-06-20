@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from lxml import etree
@@ -223,7 +223,7 @@ class PubMedMap:
             classifiers  = classifiers,
             lineage = Lineage(
                 adapter_version = self.version,
-                pipeline_run_id = datetime.utcnow().isoformat(),
+                pipeline_run_id = datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
                 llm_assisted    = False,
             ),
         )

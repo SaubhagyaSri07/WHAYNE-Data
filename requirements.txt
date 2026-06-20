@@ -5,3 +5,5 @@ lxml>=4.9
 tenacity>=8.2
 python-dateutil>=2.8
 feedparser>=6.0.8
+boto3>=1.34
+python-dotenv>=1.0

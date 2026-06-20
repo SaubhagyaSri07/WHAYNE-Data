@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Tuple
 
 from bs4 import BeautifulSoup
@@ -71,7 +71,7 @@ class CDSCODevicesAdapter(BaseAdapter):
         combined = json.dumps({
             "manufacturer": mfr_data,
             "import":       imp_data,
-            "fetched_at":   datetime.utcnow().isoformat(),
+            "fetched_at":   datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
         }, ensure_ascii=False)
 
         total = (

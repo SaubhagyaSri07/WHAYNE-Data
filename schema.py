@@ -1,6 +1,6 @@
 import hashlib
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -61,7 +61,7 @@ class CanonicalRecord(BaseModel):
     external_id:  Optional[str] = None
 
     # Time
-    captured_at:  datetime      = Field(default_factory=datetime.utcnow)
+    captured_at:  datetime      = Field(default_factory=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
     published_at: Optional[datetime] = None
 
     # Classification

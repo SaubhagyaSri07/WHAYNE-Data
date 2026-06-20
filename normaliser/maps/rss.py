@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from urllib.parse import urlparse
 
@@ -164,7 +164,7 @@ class RSSMap:
             classifiers  = classifiers,
             lineage = Lineage(
                 adapter_version = self.version,
-                pipeline_run_id = datetime.utcnow().isoformat(),
+                pipeline_run_id = datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
                 llm_assisted    = False,
             ),
         )

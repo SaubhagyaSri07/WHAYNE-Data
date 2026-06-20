@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
 
 from adapters.base import BaseAdapter
@@ -44,7 +44,7 @@ class PubMedAdapter(BaseAdapter):
         Returns raw PubMed XML string and extension 'xml'.
         """
         if since is None:
-            since = datetime.utcnow() - timedelta(days=30)
+            since = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=30)
 
         # ── Step 1: Search for PMIDs ──────────────────────────────────────
         pmids = self._search(query=query, since=since, limit=limit)
@@ -71,7 +71,7 @@ class PubMedAdapter(BaseAdapter):
     ) -> list:
         """Run esearch and return list of PMIDs."""
         since_str = since.strftime("%Y/%m/%d")
-        today_str = datetime.utcnow().strftime("%Y/%m/%d")
+        today_str = datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y/%m/%d")
 
         params = {
             "db":      "pubmed",

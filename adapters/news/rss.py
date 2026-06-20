@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, Tuple
 
 from adapters.base import BaseAdapter
@@ -71,7 +71,7 @@ class RSSAdapter(BaseAdapter):
         self.feed_urls = feed_urls or FEED_URLS
 
     def fetch(self, since: Optional[datetime] = None) -> Tuple[str, str]:
-        run_at = datetime.utcnow().isoformat()
+        run_at = datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
         feeds  = []
 
         for url in self.feed_urls:
@@ -116,7 +116,7 @@ class RSSAdapter(BaseAdapter):
                 )
                 return {"url": url, "raw_xml": None,
                         "status": resp.status_code,
-                        "fetched_at": datetime.utcnow().isoformat()}
+                        "fetched_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat()}
 
             raw_xml = resp.text
             logger.info(
@@ -127,7 +127,7 @@ class RSSAdapter(BaseAdapter):
                 "url":        url,
                 "raw_xml":    raw_xml,
                 "status":     resp.status_code,
-                "fetched_at": datetime.utcnow().isoformat(),
+                "fetched_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
             }
 
         except Exception as e:
@@ -136,5 +136,5 @@ class RSSAdapter(BaseAdapter):
                 "url":        url,
                 "raw_xml":    None,
                 "status":     None,
-                "fetched_at": datetime.utcnow().isoformat(),
+                "fetched_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
             }
