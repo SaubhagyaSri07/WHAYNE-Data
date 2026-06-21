@@ -115,22 +115,31 @@ def run(source_id: str, since: datetime = None) -> dict:
 
 
 def _get_adapter(source_id: str):
-    """Return the adapter instance for a given source_id."""
-    adapters = {
-        "pubmed":        PubMedAdapter(),
-        "clinicaltrials": ClinicalTrialsAdapter(),
-        "fda_510k": FDA510KAdapter(),
-        "cdsco": CDSCODevicesAdapter(),
+    """Return the adapter instance for a given source_id.
+
+    Builds ONLY the requested adapter, not every registered one.
+    Some adapters authenticate to external services in __init__
+    (e.g. GooglePatentsAdapter -> bigquery.Client()) — eagerly
+    constructing all of them meant every pipeline run depended on
+    every adapter's credentials being present, even for sources
+    that have nothing to do with each other.
+    """
+    adapter_classes = {
+        "pubmed":         PubMedAdapter,
+        "clinicaltrials": ClinicalTrialsAdapter,
+        "fda_510k":       FDA510KAdapter,
+        "cdsco":          CDSCODevicesAdapter,
         # Added as each source is built:
-        "eudamed": EUDAMEDAdapter(),
-        # "epo":       EPOAdapter(),
-        "uspto": USPTOAdapter(),
-        "comtrade": ComtradeAdapter(),
-        "rss": RSSAdapter(),
-        "cochrane": CochraneAdapter(),
-        "google_patents": GooglePatentsAdapter(),
+        "eudamed":        EUDAMEDAdapter,
+        # "epo":          EPOAdapter,
+        "uspto":          USPTOAdapter,
+        "comtrade":       ComtradeAdapter,
+        "rss":            RSSAdapter,
+        "cochrane":       CochraneAdapter,
+        "google_patents": GooglePatentsAdapter,
     }
-    return adapters.get(source_id)
+    adapter_class = adapter_classes.get(source_id)
+    return adapter_class() if adapter_class else None
 
 
 if __name__ == "__main__":
