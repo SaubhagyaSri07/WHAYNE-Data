@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime
 from typing import Optional, Tuple
@@ -69,7 +70,31 @@ class EUDAMEDAdapter(BaseAdapter):
         )
 
         resp = self._get(EUDAMED_UDI_URL, params=params)
-        raw  = resp.text
+
+        if resp.status_code != 200:
+            raise RuntimeError(
+                f"[{self.source_id}] EUDAMED returned HTTP {resp.status_code} — "
+                f"not writing to Bronze"
+            )
+
+        raw = resp.text
+
+        # Most EUDAMED /api/* paths return the Angular shell HTML with HTTP 200
+        # instead of JSON. Catch that here rather than letting the HTML reach
+        # Bronze and break the normaliser downstream.
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as e:
+            raise RuntimeError(
+                f"[{self.source_id}] Response was not valid JSON (likely the "
+                f"Angular shell HTML — wrong endpoint?): {e}"
+            ) from e
+
+        if "content" not in data:
+            raise RuntimeError(
+                f"[{self.source_id}] Response missing 'content' key — "
+                f"unexpected payload shape. Keys: {list(data.keys())}"
+            )
 
         logger.info(
             "[%s] Fetched %d bytes",

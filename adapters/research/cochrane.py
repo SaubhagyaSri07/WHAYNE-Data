@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime
 from typing import Optional, Tuple
@@ -66,7 +67,30 @@ class CochraneAdapter(BaseAdapter):
         }
 
         resp = self._get(EPMC_SEARCH_URL, params=params)
-        raw  = resp.text
+
+        if resp.status_code != 200:
+            raise RuntimeError(
+                f"[{self.source_id}] Europe PMC returned HTTP {resp.status_code} — "
+                f"not writing to Bronze"
+            )
+
+        raw = resp.text
+
+        # Europe PMC silently rejects malformed queries with HTTP 200 and a body
+        # of just {"version":"6.9"} — no hitCount, no resultList. Guard against
+        # writing that stub to Bronze where the normaliser would see zero hits.
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as e:
+            raise RuntimeError(
+                f"[{self.source_id}] Response was not valid JSON: {e}"
+            ) from e
+
+        if "hitCount" not in data or "resultList" not in data:
+            raise RuntimeError(
+                f"[{self.source_id}] Response missing 'hitCount'/'resultList' — "
+                f"likely a silently-rejected query. Keys: {list(data.keys())}"
+            )
 
         logger.info(
             "[%s] Fetched %d bytes",

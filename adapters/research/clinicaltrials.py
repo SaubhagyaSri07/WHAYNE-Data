@@ -63,6 +63,13 @@ class ClinicalTrialsAdapter(BaseAdapter):
         )
 
         resp = self._get(CT_API_BASE, params=params)
+
+        if resp.status_code != 200:
+            raise RuntimeError(
+                f"[{self.source_id}] ClinicalTrials.gov returned HTTP "
+                f"{resp.status_code} — not writing to Bronze"
+            )
+
         raw  = resp.text
 
         logger.info(

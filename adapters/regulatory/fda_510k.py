@@ -66,6 +66,13 @@ class FDA510KAdapter(BaseAdapter):
             )
 
         resp = self._get(FDA_510K_URL, params=params)
+
+        if resp.status_code != 200:
+            raise RuntimeError(
+                f"[{self.source_id}] openFDA returned HTTP {resp.status_code} — "
+                f"not writing to Bronze"
+            )
+
         raw  = resp.text
 
         logger.info(
