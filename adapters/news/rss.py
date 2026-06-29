@@ -9,25 +9,25 @@ logger = logging.getLogger(__name__)
 
 # ── Configured feed list ──────────────────────────────────────────────────────
 # Only add URLs you have verified return XML (not HTML error pages).
-# FDA MedWatch and CDC are confirmed working. The other FDA feeds follow
-# the same URL pattern as MedWatch — change the slug to add more:
-#   /rss-feeds/medwatch/rss.xml          ← drug/device safety alerts
-#   /rss-feeds/medical-device-safety/rss.xml
-#   /rss-feeds/drug-safety-communications/rss.xml
-#   /rss-feeds/recalls/rss.xml
-#   /rss-feeds/press-announcements/rss.xml
+# All URLs below were verified with a live curl request on 2026-06-26.
 #
-# To add EMA / WHO / NIH: visit their RSS pages to get current URLs,
-# then verify they return XML before adding here.
+# The following slugs from the old list no longer exist on fda.gov (404,
+# confirmed genuine — not Akamai bot-blocking) and have been removed:
+#   /rss-feeds/press-announcements/rss.xml          (renamed → press-releases)
+#   /rss-feeds/drug-safety-communications/rss.xml
+#   /rss-feeds/new-drug-approvals/rss.xml
+#   /rss-feeds/product-approvals/rss.xml
+#
+# To add more feeds: verify with
+#   curl -A "MarketIntelligenceBot/1.0 (research; contact@example.com)" <url>
+# and confirm it returns HTTP 200 with XML (not an HTML error page) before
+# adding here.
 FEED_URLS: List[str] = [
     # FDA — confirmed working
     "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/medwatch/rss.xml",
     "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/recalls/rss.xml",
-    # FDA — same URL pattern, likely working
-    "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-announcements/rss.xml",
-    "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/drug-safety-communications/rss.xml",
-    "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/new-drug-approvals/rss.xml",
-    "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/product-approvals/rss.xml",
+    "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml",
+    "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/drug-recalls/rss.xml",
     # CDC — confirmed working
     "https://tools.cdc.gov/api/v2/resources/media/316422.rss",
 ]

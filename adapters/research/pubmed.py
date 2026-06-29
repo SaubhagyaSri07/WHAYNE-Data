@@ -84,16 +84,16 @@ class PubMedAdapter(BaseAdapter):
         try:
             response = self._get(ESEARCH_URL, params=params)
             if response.status_code != 200:
-                logger.error(
-                    f"[{self.source_id}] esearch returned {response.status_code}"
+                raise RuntimeError(
+                    f"esearch returned HTTP {response.status_code}"
                 )
-                return []
             data  = response.json()
             pmids = data.get("esearchresult", {}).get("idlist", [])
             return pmids
+        except RuntimeError:
+            raise
         except Exception as e:
-            logger.error(f"[{self.source_id}] esearch failed: {e}")
-            return []
+            raise RuntimeError(f"esearch failed: {e}") from e
 
     def _fetch_records(self, pmids: list) -> str:
         """Run efetch and return raw XML string."""
@@ -107,11 +107,11 @@ class PubMedAdapter(BaseAdapter):
         try:
             response = self._get(EFETCH_URL, params=params)
             if response.status_code != 200:
-                logger.error(
-                    f"[{self.source_id}] efetch returned {response.status_code}"
+                raise RuntimeError(
+                    f"efetch returned HTTP {response.status_code}"
                 )
-                return ""
             return response.text
+        except RuntimeError:
+            raise
         except Exception as e:
-            logger.error(f"[{self.source_id}] efetch failed: {e}")
-            return ""
+            raise RuntimeError(f"efetch failed: {e}") from e

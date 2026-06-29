@@ -1,3 +1,4 @@
+# ── Core pipeline ─────────────────────────────────────────────────────────────
 pydantic>=2.0
 requests>=2.31
 beautifulsoup4>=4.12
@@ -5,5 +6,22 @@ lxml>=4.9
 tenacity>=8.2
 python-dateutil>=2.8
 feedparser>=6.0.8
-boto3>=1.34
 python-dotenv>=1.0
+
+# ── Bronze + Silver — Cloudflare R2 (S3-compatible) ──────────────────────────
+boto3>=1.34
+
+# ── Silver — Apache Iceberg on R2, catalog on Neon Postgres ──────────────────
+# sql-postgres  : JDBC catalog backed by Neon Postgres
+# pyiceberg-core: Rust extension required for DayTransform partition on captured_at
+# s3fs intentionally excluded — it pulls in aiobotocore which has a strict
+# boto3 version pin that conflicts with our boto3>=1.34.
+# PyArrow's built-in S3FileSystem handles R2 file I/O instead (no conflict).
+pyiceberg[sql-postgres,pyiceberg-core]>=0.7.0
+
+# Explicit pin: 2.9.11+ has pre-built arm64 wheels for Python 3.9.
+# Without this pip falls back to building 2.9.10 from source which requires
+# pg_config (Postgres dev headers) and fails on a plain Mac install.
+psycopg2-binary>=2.9.11
+
+pyarrow>=14.0.0

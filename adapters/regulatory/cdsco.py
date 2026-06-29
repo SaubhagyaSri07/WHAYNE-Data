@@ -110,8 +110,10 @@ class CDSCODevicesAdapter(BaseAdapter):
             return token
 
         except Exception as e:
-            logger.error("[%s] Session setup failed: %s", self.source_id, e)
-            return None
+            raise RuntimeError(
+                f"[{self.source_id}] Session setup failed — "
+                f"portal may be down or have changed structure: {e}"
+            ) from e
 
     def _fetch_category(
         self,

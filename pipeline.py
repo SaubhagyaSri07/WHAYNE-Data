@@ -88,9 +88,8 @@ def run(source_id: str, since: datetime = None) -> dict:
 
     print(f"  Produced {len(records)} canonical records")
 
-    # ── Step 5: Write to Silver ───────────────────────────────────────────
     print(f"\n  [4/4] Writing canonical records to Silver...")
-    silver_path = write_silver(
+    silver_path, silver_new = write_silver(
         category  = adapter.source_category,
         source_id = source_id,
         records   = records,
@@ -101,16 +100,20 @@ def run(source_id: str, since: datetime = None) -> dict:
     print(f"\n  Sample records:")
     print_sample(records, n=2)
 
+    silver_skipped = len(records) - silver_new
     print(f"\n{'=' * 60}")
-    print(f"  Done — {len(records)} records in Bronze and Silver")
+    print(f"  Bronze : {len(records)} records written")
+    print(f"  Silver : {silver_new} new  |  {silver_skipped} duplicate(s) skipped")
     print(f"{'=' * 60}\n")
 
     return {
-        "source_id":    source_id,
-        "status":       "success",
-        "record_count": len(records),
-        "bronze_path":  bronze_path,
-        "silver_path":  silver_path,
+        "source_id":        source_id,
+        "status":           "success",
+        "record_count":     len(records),
+        "silver_new":       silver_new,
+        "silver_skipped":   silver_skipped,
+        "bronze_path":      bronze_path,
+        "silver_path":      silver_path,
     }
 
 
